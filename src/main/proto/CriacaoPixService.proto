@@ -12,24 +12,27 @@ service CriacaoPixService {
 }
 
 enum TipoChave{
-  CPF = 0;
+  UNKNOWN_TIPO_CHAVE = 0;
+  RANDOM = 1;
   CELULAR = 2;
   EMAIL = 3;
-  RANDOM = 4;
+  CPF = 4;
 }
 
 enum TipoConta{
-  CORRENTE = 0;
-  POUPANCA = 1;
+  UNKNOWN_TIPO_CONTA =0;
+  CONTA_CORRENTE = 1;
+  CONTA_POUPANCA = 2;
 }
 
 message DadosCriacaoPixRequest {
   string idCliente = 1;
   TipoChave tipoChave = 2;
-  string valorChave = 3;
+  string chave = 3;
   TipoConta tipoConta = 4;
 }
 
 message DadosCriacaoPixResponse {
-  string message = 1;
+  string idCliente = 1;
+  string idPix = 2;
 }

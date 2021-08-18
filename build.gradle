@@ -36,6 +36,12 @@ dependencies {
 
     testImplementation("io.micronaut:micronaut-http-client")
 
+    implementation("io.micronaut:micronaut-http-client")
+    implementation("io.micronaut.xml:micronaut-jackson-xml")
+
+    runtime("io.micronaut.sql:micronaut-jdbc-hikari")
+    implementation("io.micronaut.data:micronaut-data-hibernate-jpa")
+    implementation("org.postgresql:postgresql:42.1.4")
 }
 
 
