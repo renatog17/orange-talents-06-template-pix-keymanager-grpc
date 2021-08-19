@@ -7,7 +7,7 @@ fun DadosCriacaoPixRequest.toDto() : DadosCriacaoPixRequestDto {
 
     return DadosCriacaoPixRequestDto(
         clienteId = clienteId,
-        tipoChave = tipoChave.name,
+        tipoChave = tipoChave,
         chave = chave,
-        tipoConta = tipoConta.name)
+        tipoConta = tipoConta)
 }

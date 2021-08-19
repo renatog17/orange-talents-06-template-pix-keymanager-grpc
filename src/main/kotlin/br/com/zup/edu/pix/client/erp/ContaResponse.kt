@@ -12,11 +12,11 @@ data class ContaResponse(
     val titular: TitularResponse
 ){
 
-    fun toModel():Cliente{
+    fun toModel(chavePix: String):Cliente{
         val instituicao = Instituicao(nome=instituicao.nome, ispb = instituicao.nome)
         val conta = Conta(tipo=tipo,agencia=agencia, numero=numero)
         val cliente = Cliente(
-            chavePix = "chave teste",
+            chavePix = chavePix,
             cpf = titular.cpf,
             idCLiente = titular.id,
             nome = titular.nome,

@@ -9,11 +9,12 @@ import javax.validation.constraints.NotNull
 import javax.validation.constraints.Size
 
 @Introspected
+@ValidPixKey
 class DadosCriacaoPixRequestDto(
     @field:NotBlank val clienteId: String,
-    @field:NotNull val tipoChave: String,
+    @field:NotNull val tipoChave: TipoChave,
     @field:NotBlank @field:Size(max = 77) val chave: String,
-    @field:NotNull val tipoConta: String
+    @field:NotNull val tipoConta: TipoConta
 ) {
 
 }

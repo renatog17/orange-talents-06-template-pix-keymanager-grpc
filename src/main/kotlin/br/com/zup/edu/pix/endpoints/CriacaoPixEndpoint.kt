@@ -31,7 +31,7 @@ class CriacaoPixEndpoint(
     ) {
         val dadosCriacaoPixRequestDto = request?.toDto()
         val contaResponse = novaChavePixService.resgistra(dadosCriacaoPixRequestDto!!)
-        val cliente = contaResponse.toModel()
+        val cliente = contaResponse.toModel(dadosCriacaoPixRequestDto.chave)
 
         contaRepository.save(cliente.conta)
         instituicaoRepository.save(cliente.instituicao)

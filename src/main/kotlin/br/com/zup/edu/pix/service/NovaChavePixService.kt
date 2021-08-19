@@ -14,7 +14,7 @@ import javax.validation.Valid
 class NovaChavePixService(@Inject val erpClient: ErpClient) {
 
     fun resgistra(@Valid dadosNovaChavePix: DadosCriacaoPixRequestDto):ContaResponse{
-        val consultarConta = erpClient.consultarConta(dadosNovaChavePix.tipoConta, dadosNovaChavePix.clienteId)
+        val consultarConta = erpClient.consultarConta(dadosNovaChavePix.tipoConta.name, dadosNovaChavePix.clienteId)
         return consultarConta.body()
     }
 }
