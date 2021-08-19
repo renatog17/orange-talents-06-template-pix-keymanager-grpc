@@ -26,13 +26,13 @@ enum TipoConta{
 }
 
 message DadosCriacaoPixRequest {
-  string idCliente = 1;
+  string clienteId = 1;
   TipoChave tipoChave = 2;
   string chave = 3;
   TipoConta tipoConta = 4;
 }
 
 message DadosCriacaoPixResponse {
-  string idCliente = 1;
+  string clienteId = 1;
   string idPix = 2;
 }
