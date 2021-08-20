@@ -17,19 +17,20 @@ data class ContaResponse(
 
     fun toModel(chavePix: DadosCriacaoPixRequestDto): Cliente {
         val instituicao = Instituicao(
-            nome=instituicao.nome,
-            ispb = instituicao.nome)
+            nomeInstituicao= instituicao.nome,
+            ispbInstituicao = instituicao.nome)
         val conta = Conta(
-            tipo=tipo,
-            agencia=agencia,
-            numero=numero)
+            tipoConta= chavePix.tipoConta,
+            agenciaConta= agencia,
+            numeroConta= numero)
         val cliente = Cliente(
             chavePix = if(chavePix.tipoChave == TipoChave.RANDOM) UUID.randomUUID().toString() else chavePix.chave,
             cpf = titular.cpf,
             idCLiente = titular.id,
             nome = titular.nome,
             instituicao = instituicao,
-            conta = conta
+            conta = conta,
+            tipoChave = chavePix.tipoChave
         )
         return cliente
     }
