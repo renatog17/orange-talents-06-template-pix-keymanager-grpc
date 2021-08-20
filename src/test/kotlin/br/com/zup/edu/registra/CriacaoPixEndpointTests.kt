@@ -23,13 +23,13 @@ import org.junit.jupiter.api.Assertions.assertNotNull
 import javax.inject.Singleton
 
 @MicronautTest(transactional = false)
-internal class CriacaoPixEndpoint(
+internal class CriacaoPixEndpointTests(
     @Inject val repository: ClienteRepository,
-    @Inject val grpcClient: CriacaoPixServiceGrpc.CriacaoPixServiceBlockingStub
+    val grpcClient: CriacaoPixServiceGrpc.CriacaoPixServiceBlockingStub
 ) {
 
-    @Inject
-    lateinit var itauClient: ErpClient;
+//    @Inject
+//    lateinit var itauClient: ErpClient;
 
     @BeforeEach
     fun setUp(){
@@ -56,13 +56,13 @@ internal class CriacaoPixEndpoint(
 //    fun itauClient(): ErpClient? {
 //        return Mockito.mock(ErpClient::class.java)
 //    }
-
-
-    @Factory
-    class Clients{
-        @Singleton
-        fun blockingStub(@GrpcChannel(GrpcServerChannel.NAME) channel: ManagedChannel):CriacaoPixServiceGrpc.CriacaoPixServiceBlockingStub?{
-            return CriacaoPixServiceGrpc.newBlockingStub(channel)
-        }
+@Factory
+class Clients{
+    @Bean
+    fun blockingStub(@GrpcChannel(GrpcServerChannel.NAME) channel: ManagedChannel): CriacaoPixServiceGrpc.CriacaoPixServiceBlockingStub?{
+        return CriacaoPixServiceGrpc.newBlockingStub(channel)
     }
+}
+
+
 }
