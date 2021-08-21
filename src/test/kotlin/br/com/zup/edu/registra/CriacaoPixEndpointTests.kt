@@ -58,7 +58,7 @@ internal class CriacaoPixEndpointTests(
 //    }
 @Factory
 class Clients{
-    @Bean
+    @Singleton
     fun blockingStub(@GrpcChannel(GrpcServerChannel.NAME) channel: ManagedChannel): CriacaoPixServiceGrpc.CriacaoPixServiceBlockingStub?{
         return CriacaoPixServiceGrpc.newBlockingStub(channel)
     }
