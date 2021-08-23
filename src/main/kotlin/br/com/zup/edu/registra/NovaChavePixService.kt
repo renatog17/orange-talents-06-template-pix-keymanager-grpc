@@ -21,11 +21,11 @@ class NovaChavePixService(@Inject val erpClient: ErpClient,
         if(clienteRepository.existsByChavePix(dadosNovaChavePix.chave)){
             throw ChavePixJaExistenteException("Chave PIX '${dadosNovaChavePix.chave}' já existente")
         }
-        println("antes")
+
         val contaResponse = erpClient.consultarConta(dadosNovaChavePix.tipoConta.name, dadosNovaChavePix.clienteId)
-        println("depois")
+
         println(contaResponse.body().titular)
-        println("aaaaaaa")
+        //null pointer acontece na linha acima ao tentar acessar o atributo
         try {
             val cliente = contaResponse.body()?.toModel(dadosNovaChavePix)
             clienteRepository.save(cliente)
