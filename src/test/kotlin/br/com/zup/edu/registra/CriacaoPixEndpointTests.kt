@@ -1,10 +1,10 @@
 package br.com.zup.edu.registra
 
-import br.com.zup.edu.CriacaoPixServiceGrpc
-import br.com.zup.edu.DadosCriacaoPixRequest
-import br.com.zup.edu.TipoChave
-import br.com.zup.edu.TipoConta
+import br.com.zup.edu.*
+import br.com.zup.edu.client.erp.ContaResponse
 import br.com.zup.edu.client.erp.ErpClient
+import br.com.zup.edu.client.erp.InstituicaoResponse
+import br.com.zup.edu.client.erp.TitularResponse
 import br.com.zup.edu.registra.model.Cliente
 import br.com.zup.edu.registra.model.Conta
 import br.com.zup.edu.registra.model.Instituicao
@@ -19,6 +19,7 @@ import io.micronaut.grpc.server.GrpcServerChannel
 import io.micronaut.http.HttpResponse
 import io.micronaut.test.annotation.MockBean
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest
+import org.hamcrest.MatcherAssert.assertThat
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -41,8 +42,8 @@ internal class CriacaoPixEndpointTests(
         val CLIENTE_ID = "c56dfef4-7901-44fb-84e2-a2cefb157890"
     }
 
-//    @Inject
-//    lateinit var itauClient: ErpClient;
+    @Inject
+    lateinit var itauClient: ErpClient;
 
     @BeforeEach
     fun setUp(){
@@ -51,6 +52,8 @@ internal class CriacaoPixEndpointTests(
 
     @Test
     fun `deve registrar nova chave pix`(){
+        `when`(itauClient()?.consultarConta("CONTA_CORRENTE", CLIENTE_ID))
+            .thenReturn(HttpResponse.ok(contaResponse()))
         val response = grpcClient.cadastrar(DadosCriacaoPixRequest.newBuilder()
             .setClienteId(CLIENTE_ID)
             .setTipoChave(TipoChave.EMAIL)
@@ -116,6 +119,21 @@ internal class CriacaoPixEndpointTests(
         }
     }
 
+//    @Test
+//    fun `nao deve registrar nova chave quando parametos forem invalidos`(){
+//        //acao
+//        val thrown = assertThrows<StatusRuntimeException> {
+//            grpcClient.cadastrar(DadosCriacaoPixRequest.newBuilder().build())
+//        }
+//
+//        //validacao
+//        with(thrown){
+//            assertEquals(Status.INVALID_ARGUMENT.code, status.code)
+//            assertEquals("Dados inválidos", status.description)
+//            assertThat(vio)
+//        }
+//    }
+
     @MockBean(ErpClient::class)
     fun itauClient(): ErpClient? {
         return Mockito.mock(ErpClient::class.java)
@@ -128,5 +146,14 @@ class Clients{
     }
 }
 
+    private fun contaResponse(): ContaResponse{
+        return ContaResponse(
+            agencia = "0001",
+            numero = "291900",
+            titular = TitularResponse(id = CLIENTE_ID, nome="Rafael M C Ponte", cpf="02467781054"),
+            tipo = "CONTA_CORRENTE",
+            instituicao = InstituicaoResponse(nome ="ITAÚ UNIBANCO S.A.", ispb ="60701190")
+        )
+    }
 
 }

@@ -4,6 +4,7 @@ import br.com.zup.edu.client.erp.ErpClient
 import br.com.zup.edu.registra.model.Cliente
 import br.com.zup.edu.registra.repository.ClienteRepository
 import io.micronaut.validation.Validated
+import java.lang.NullPointerException
 import javax.inject.Inject
 import javax.inject.Singleton
 import javax.transaction.Transactional
@@ -20,10 +21,17 @@ class NovaChavePixService(@Inject val erpClient: ErpClient,
         if(clienteRepository.existsByChavePix(dadosNovaChavePix.chave)){
             throw ChavePixJaExistenteException("Chave PIX '${dadosNovaChavePix.chave}' já existente")
         }
-
+        println("antes")
         val contaResponse = erpClient.consultarConta(dadosNovaChavePix.tipoConta.name, dadosNovaChavePix.clienteId)
-        val cliente = contaResponse.body()?.toModel(dadosNovaChavePix) ?: throw IllegalStateException("Cliente não encontrado no Itau")
-        clienteRepository.save(cliente)
-        return cliente
+        println("depois")
+        println(contaResponse.body().titular)
+        println("aaaaaaa")
+        try {
+            val cliente = contaResponse.body()?.toModel(dadosNovaChavePix)
+            clienteRepository.save(cliente)
+            return cliente!!
+        }catch (e:NullPointerException){
+            throw IllegalStateException("Cliente não encontrado no Itau")
+        }
     }
 }

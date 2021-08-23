@@ -14,7 +14,6 @@ data class ContaResponse(
     val instituicao: InstituicaoResponse,
     val titular: TitularResponse
 ){
-
     fun toModel(chavePix: DadosCriacaoPixRequestDto): Cliente {
         val instituicao = Instituicao(
             nomeInstituicao= instituicao.nome,
@@ -33,5 +32,29 @@ data class ContaResponse(
             tipoChave = chavePix.tipoChave
         )
         return cliente
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as ContaResponse
+
+        if (agencia != other.agencia) return false
+        if (numero != other.numero) return false
+        if (tipo != other.tipo) return false
+        if (instituicao != other.instituicao) return false
+        if (titular != other.titular) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = agencia.hashCode()
+        result = 31 * result + numero.hashCode()
+        result = 31 * result + tipo.hashCode()
+        result = 31 * result + instituicao.hashCode()
+        result = 31 * result + titular.hashCode()
+        return result
     }
 }

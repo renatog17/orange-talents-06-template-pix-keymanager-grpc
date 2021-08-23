@@ -7,6 +7,7 @@ import br.com.zup.edu.exceptions.ErrorHandler
 import br.com.zup.edu.pix.extensions.toDto
 import br.com.zup.edu.registra.model.Cliente
 import br.com.zup.edu.registra.repository.ClienteRepository
+import io.grpc.Status
 import io.grpc.stub.StreamObserver
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -23,7 +24,16 @@ class CriacaoPixEndpoint(
     ) {
         //validar
         val dadosCriacaoPixRequestDto = request.toDto()
-        val cliente = novaChavePixService.resgistra(dadosCriacaoPixRequestDto)
+        val cliente:Cliente
+        try {
+            cliente = novaChavePixService.resgistra(dadosCriacaoPixRequestDto)
+        }catch (e:IllegalStateException){
+            val e = Status.FAILED_PRECONDITION
+                .withDescription("Cliente não encontrado no Itau")
+                .asRuntimeException()
+            responseObserver?.onError(e)
+            return
+        }
         responseObserver.onNext(
             DadosCriacaoPixResponse
                 .newBuilder()
