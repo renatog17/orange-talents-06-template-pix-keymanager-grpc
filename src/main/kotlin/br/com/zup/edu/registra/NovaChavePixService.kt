@@ -18,11 +18,11 @@ class NovaChavePixService(@Inject val erpClient: ErpClient,
     fun resgistra(@Valid dadosNovaChavePix: DadosCriacaoPixRequestDto): Cliente {
 
         if(clienteRepository.existsByChavePix(dadosNovaChavePix.chave)){
-            throw ChavePixJaExistenteException("Chave PIX '{${dadosNovaChavePix.chave}' já existete")
+            throw ChavePixJaExistenteException("Chave PIX '${dadosNovaChavePix.chave}' já existente")
         }
 
         val contaResponse = erpClient.consultarConta(dadosNovaChavePix.tipoConta.name, dadosNovaChavePix.clienteId)
-        val cliente = contaResponse.body().toModel(dadosNovaChavePix)
+        val cliente = contaResponse.body()?.toModel(dadosNovaChavePix) ?: throw IllegalStateException("Cliente não encontrado no Itau")
         clienteRepository.save(cliente)
         return cliente
     }

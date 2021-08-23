@@ -14,14 +14,14 @@ import javax.inject.Singleton
 @ErrorHandler
 @Singleton
 class CriacaoPixEndpoint(
-    @Inject val novaChavePixService: NovaChavePixService,
-    @Inject val clienteRepository: ClienteRepository
+    @Inject val novaChavePixService: NovaChavePixService
     ) : CriacaoPixServiceGrpc.CriacaoPixServiceImplBase() {
 
     override fun cadastrar(
         request: DadosCriacaoPixRequest,
         responseObserver: StreamObserver<DadosCriacaoPixResponse>
     ) {
+        //validar
         val dadosCriacaoPixRequestDto = request.toDto()
         val cliente = novaChavePixService.resgistra(dadosCriacaoPixRequestDto)
         responseObserver.onNext(
