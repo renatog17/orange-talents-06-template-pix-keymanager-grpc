@@ -11,6 +11,10 @@ service CriacaoPixService {
   rpc cadastrar (DadosCriacaoPixRequest) returns (DadosCriacaoPixResponse) {}
 }
 
+service RemoverPixService {
+  rpc remover (RemoverPixRequest) returns (RemoverPixResponse){}
+}
+
 enum TipoChave{
   UNKNOWN_TIPO_CHAVE = 0;
   RANDOM = 1;
@@ -35,4 +39,13 @@ message DadosCriacaoPixRequest {
 message DadosCriacaoPixResponse {
   string clienteId = 1;
   string idPix = 2;
+}
+
+message RemoverPixRequest {
+  string pixId = 1;
+  string clienteId = 2;
+}
+
+message RemoverPixResponse {
+  string pixId = 1;
 }
