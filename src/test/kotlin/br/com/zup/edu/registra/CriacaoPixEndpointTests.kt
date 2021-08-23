@@ -121,23 +121,24 @@ internal class CriacaoPixEndpointTests(
         }
     }
 
-//    @Test
-//    fun `nao deve registrar nova chave quando parametos forem invalidos`(){
-//        //acao
-//        val thrown = assertThrows<StatusRuntimeException> {
-//            grpcClient.cadastrar(DadosCriacaoPixRequest.newBuilder().build())
-//        }
-//
-//        //validacao
-//        with(thrown){
-//            assertEquals(Status.INVALID_ARGUMENT.code, status.code)
-//            assertEquals("Dados inválidos", status.description)
+    @Test
+    fun `nao deve registrar nova chave quando parametos forem invalidos`(){
+        //acao
+        val thrown = assertThrows<StatusRuntimeException> {
+            grpcClient.cadastrar(DadosCriacaoPixRequest.newBuilder().build())
+        }
+
+        //validacao
+        with(thrown){
+            assertEquals(Status.INVALID_ARGUMENT.code, status.code)
+            assertEquals("Dados inválidos", status.description)
 //            assertThat(violations(), containsInAnyOrder(
 //                Pair("clienteId", "must not be blank"),
 //                Pair("tipoDeConta", "must not be null"),
 //                Pair("tipo", "must not be null"),))
-//        }
-//    }
+        }
+    }
+
 
     @MockBean(ErpClient::class)
     fun itauClient(): ErpClient? {
