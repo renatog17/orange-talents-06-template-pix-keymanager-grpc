@@ -127,7 +127,6 @@ internal class CriacaoPixEndpointTests(
         val thrown = assertThrows<StatusRuntimeException> {
             grpcClient.cadastrar(DadosCriacaoPixRequest.newBuilder().build())
         }
-
         //validacao
         with(thrown){
             assertEquals(Status.INVALID_ARGUMENT.code, status.code)
@@ -136,6 +135,24 @@ internal class CriacaoPixEndpointTests(
 //                Pair("clienteId", "must not be blank"),
 //                Pair("tipoDeConta", "must not be null"),
 //                Pair("tipo", "must not be null"),))
+        }
+    }
+
+    @Test
+    fun `nao deve registrar nova chave quando parametos forem invalidos - chave invalida`(){
+        //acao
+        val thrown = assertThrows<StatusRuntimeException> {
+            grpcClient.cadastrar(DadosCriacaoPixRequest.newBuilder()
+                .setClienteId(CLIENTE_ID)
+                .setTipoChave(TipoChave.EMAIL)
+                .setChave("invalido")
+                .setTipoConta(TipoConta.CONTA_CORRENTE)
+                .build())
+        }
+        //validacao
+        with(thrown){
+            assertEquals(Status.INVALID_ARGUMENT.code, status.code)
+            assertEquals("Dados inválidos", status.description)
         }
     }
 
