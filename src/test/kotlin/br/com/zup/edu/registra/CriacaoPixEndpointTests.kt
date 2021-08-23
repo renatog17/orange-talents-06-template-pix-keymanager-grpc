@@ -9,6 +9,7 @@ import br.com.zup.edu.registra.model.Cliente
 import br.com.zup.edu.registra.model.Conta
 import br.com.zup.edu.registra.model.Instituicao
 import br.com.zup.edu.registra.repository.ClienteRepository
+import br.com.zup.edu.utils.violations
 import io.grpc.ManagedChannel
 import io.grpc.Status
 import io.grpc.StatusRuntimeException
@@ -20,6 +21,7 @@ import io.micronaut.http.HttpResponse
 import io.micronaut.test.annotation.MockBean
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest
 import org.hamcrest.MatcherAssert.assertThat
+import org.hamcrest.Matchers.containsInAnyOrder
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -52,7 +54,7 @@ internal class CriacaoPixEndpointTests(
 
     @Test
     fun `deve registrar nova chave pix`(){
-        `when`(itauClient()?.consultarConta("CONTA_CORRENTE", CLIENTE_ID))
+        `when`(itauClient?.consultarConta("CONTA_CORRENTE", CLIENTE_ID))
             .thenReturn(HttpResponse.ok(contaResponse()))
         val response = grpcClient.cadastrar(DadosCriacaoPixRequest.newBuilder()
             .setClienteId(CLIENTE_ID)
@@ -97,9 +99,9 @@ internal class CriacaoPixEndpointTests(
     }
 
     @Test
-    fun `nao deve registrar nova chave quando não encontrar dados na conta do cliente`(){
+    fun `nao deve registrar nova chave quando nao encontrar dados na conta do cliente`(){
         //cenário
-        `when`(itauClient()?.consultarConta(TipoConta.CONTA_CORRENTE.name, CLIENTE_ID))
+        `when`(itauClient?.consultarConta(TipoConta.CONTA_CORRENTE.name, CLIENTE_ID))
             .thenReturn(HttpResponse.notFound())
         //ação
         val thrown = assertThrows<StatusRuntimeException> {
@@ -130,7 +132,10 @@ internal class CriacaoPixEndpointTests(
 //        with(thrown){
 //            assertEquals(Status.INVALID_ARGUMENT.code, status.code)
 //            assertEquals("Dados inválidos", status.description)
-//            assertThat(vio)
+//            assertThat(violations(), containsInAnyOrder(
+//                Pair("clienteId", "must not be blank"),
+//                Pair("tipoDeConta", "must not be null"),
+//                Pair("tipo", "must not be null"),))
 //        }
 //    }
 
