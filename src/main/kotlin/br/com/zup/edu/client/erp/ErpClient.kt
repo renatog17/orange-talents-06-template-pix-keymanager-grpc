@@ -10,4 +10,8 @@ interface ErpClient {
 
     @Get("/clientes/{clienteId}/contas")
     fun consultarConta(@QueryValue tipo:String, clienteId:String?): HttpResponse<ContaResponse>
+
+    @Get("/clientes/{clienteId}")
+    fun consultarCliente(clienteId: String?): HttpResponse<ClienteResponse>
+
 }
