@@ -8,4 +8,6 @@ import io.micronaut.data.jpa.repository.JpaRepository
 @Repository
 interface ClienteRepository: JpaRepository<Cliente, Long> {
     fun existsByChavePix(chave: String) :Boolean
+    fun deleteByChavePix(chave: String)
+    fun findByChavePix(chave: String): Cliente
 }

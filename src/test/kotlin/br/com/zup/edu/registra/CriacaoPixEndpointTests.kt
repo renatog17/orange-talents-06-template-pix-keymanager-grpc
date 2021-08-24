@@ -113,7 +113,6 @@ internal class CriacaoPixEndpointTests(
                             .build()
                         )
         }
-        println("${thrown.status.code} aaaaa")
         //validação
         with(thrown){
             assertEquals(Status.FAILED_PRECONDITION.code, status.code)
