@@ -28,8 +28,8 @@ class RemoverPixEndpoint(
     ) {
 
 
-        val contaResponse = erpClient.consultarCliente(request.clienteId)
-        if(contaResponse.status().code==404){
+        val clienteResponse = erpClient.consultarCliente(request.clienteId)
+        if(clienteResponse.status().code==404){
             throw ClienteItauNaoEncontradoException("Cliente não encontrado no banco Itaú")
         }
 
