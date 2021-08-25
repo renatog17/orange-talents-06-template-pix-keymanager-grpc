@@ -10,6 +10,7 @@ import br.com.zup.edu.registra.model.Cliente
 import br.com.zup.edu.registra.repository.ClienteRepository
 import io.grpc.stub.StreamObserver
 import io.grpc.Status
+import io.micronaut.http.HttpStatus
 import io.micronaut.http.client.exceptions.HttpClientResponseException
 import java.lang.NullPointerException
 import javax.inject.Inject
@@ -29,7 +30,7 @@ class RemoverPixEndpoint(
 
 
         val clienteResponse = erpClient.consultarCliente(request.clienteId)
-        if(clienteResponse.status().code==404){
+        if(clienteResponse.status().code==HttpStatus.NOT_FOUND.code){
             throw ClienteItauNaoEncontradoException("Cliente não encontrado no banco Itaú")
         }
 

@@ -38,6 +38,33 @@ internal class RemoverPixEndpointTest(
     lateinit var itauClient: ErpClient;
 
     @Test
+    fun `deve excluir chave pix`(){
+        //cenario
+        `when`(itauClient.consultarCliente(CLIENTE_ID))
+            .thenReturn(HttpResponse.ok(clienteResponse()))
+        val cliente = Cliente(
+            chavePix="teste@email.com",
+            tipoChave = TipoChave.EMAIL,
+            cpf ="02467781054",
+            idCLiente = CLIENTE_ID,
+            nome ="Rafael M C Ponte",
+            instituicao= Instituicao(nomeInstituicao="ITAÚ UNIBANCO S.A.", ispbInstituicao="60701190"),
+            conta= Conta(agenciaConta = "0001", numeroConta = "291900", tipoConta = TipoConta.CONTA_CORRENTE)
+        )
+        repository.save(cliente)
+        //acao
+        val response = grpcClient.remover(RemoverPixRequest
+                .newBuilder()
+                .setClienteId(CLIENTE_ID)
+                .setPixId("teste@email.com")
+                .build())
+        //validacao
+        with(response){
+            assertEquals(cliente.chavePix, "teste@email.com")
+        }
+    }
+
+    @Test
     fun `nao deve excluir chave quando cliente nao for encontrado no itau`(){
         //cenario
         `when`(itauClient.consultarCliente(CLIENTE_ID))
@@ -81,7 +108,7 @@ internal class RemoverPixEndpointTest(
     @Test
     fun `nao deve excluir chave quando usuario nao for proprietario`(){
         //cenario
-        `when`(itauClient.consultarCliente(CLIENTE_ID))
+        `when`(itauClient.consultarCliente("0d1bb194-3c52-4e67-8c35-a93c0af9284f"))
             .thenReturn(HttpResponse.ok(clienteResponse()))
         val cliente = Cliente(
             chavePix="teste@email.com",
