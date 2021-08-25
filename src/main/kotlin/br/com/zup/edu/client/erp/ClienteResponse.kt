@@ -1,6 +1,6 @@
 package br.com.zup.edu.client.erp
 
-class ClienteResponse(
+data class ClienteResponse(
     val id:String,
     val nome:String,
     val cpf:String,
