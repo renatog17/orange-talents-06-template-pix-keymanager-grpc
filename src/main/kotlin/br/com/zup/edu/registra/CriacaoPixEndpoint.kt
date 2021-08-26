@@ -28,10 +28,10 @@ class CriacaoPixEndpoint(
         try {
             cliente = novaChavePixService.resgistra(dadosCriacaoPixRequestDto)
         }catch (e:IllegalStateException){
-            val e = Status.FAILED_PRECONDITION
-                .withDescription("Cliente não encontrado no Itau")
+            val error = Status.FAILED_PRECONDITION
+                .withDescription(e.message)
                 .asRuntimeException()
-            responseObserver?.onError(e)
+            responseObserver?.onError(error)
             return
         }
         responseObserver.onNext(

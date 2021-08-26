@@ -1,6 +1,10 @@
 package br.com.zup.edu.registra
 
 import br.com.zup.edu.*
+import br.com.zup.edu.client.bcb.*
+import br.com.zup.edu.client.bcb.enums.AccountType
+import br.com.zup.edu.client.bcb.enums.KeyType
+import br.com.zup.edu.client.bcb.enums.PessoaType
 import br.com.zup.edu.client.erp.ContaResponse
 import br.com.zup.edu.client.erp.ErpClient
 import br.com.zup.edu.client.erp.InstituicaoResponse
@@ -45,7 +49,10 @@ internal class CriacaoPixEndpointTests(
     }
 
     @Inject
-    lateinit var itauClient: ErpClient;
+    lateinit var itauClient: ErpClient
+
+    @Inject
+    lateinit var bcbPixClient: BcbPixClient
 
     @BeforeEach
     fun setUp(){
@@ -54,8 +61,11 @@ internal class CriacaoPixEndpointTests(
 
     @Test
     fun `deve registrar nova chave pix`(){
-        `when`(itauClient?.consultarConta("CONTA_CORRENTE", CLIENTE_ID))
+
+        `when`(itauClient.consultarConta("CONTA_CORRENTE", CLIENTE_ID))
             .thenReturn(HttpResponse.ok(contaResponse()))
+        `when`(bcbPixClient.cadastrar(novoCreatePixKeyRequest()))
+            .thenReturn(HttpResponse.created(novoCreatePixKeyResponse()))
         val response = grpcClient.cadastrar(DadosCriacaoPixRequest.newBuilder()
             .setClienteId(CLIENTE_ID)
             .setTipoChave(TipoChave.EMAIL)
@@ -64,7 +74,7 @@ internal class CriacaoPixEndpointTests(
             .build())
 
         with(response){
-            assertEquals(CLIENTE_ID, CLIENTE_ID)
+            assertEquals(CLIENTE_ID, clienteId)
             assertNotNull(idPix)
         }
     }
@@ -101,7 +111,7 @@ internal class CriacaoPixEndpointTests(
     @Test
     fun `nao deve registrar nova chave quando nao encontrar dados na conta do cliente`(){
         //cenário
-        `when`(itauClient?.consultarConta(TipoConta.CONTA_CORRENTE.name, CLIENTE_ID))
+        `when`(itauClient.consultarConta(TipoConta.CONTA_CORRENTE.name, CLIENTE_ID))
             .thenReturn(HttpResponse.notFound())
         //ação
         val thrown = assertThrows<StatusRuntimeException> {
@@ -155,10 +165,35 @@ internal class CriacaoPixEndpointTests(
         }
     }
 
+    @Test
+    fun `nao deve resgistrar chave pix duplicada bcb`(){
+        //cenario
+        `when`(bcbPixClient.cadastrar(novoCreatePixKeyRequest()))
+            .thenReturn(HttpResponse.unprocessableEntity())
+        `when`(itauClient.consultarConta(TipoConta.CONTA_CORRENTE.name, CLIENTE_ID))
+            .thenReturn(HttpResponse.ok(contaResponse()))
+        //acao
+        val thrown = assertThrows<StatusRuntimeException> {
+            grpcClient.cadastrar(DadosCriacaoPixRequest.newBuilder()
+                .setClienteId(CLIENTE_ID)
+                .setTipoChave(TipoChave.EMAIL)
+                .setChave("rafael@email.com")
+                .setTipoConta(TipoConta.CONTA_CORRENTE)
+                .build())
+        }
+        with(thrown){
+            assertEquals("Chave PIX rafael@email.com já cadastrada no Banco Central do Brasil", status.description)
+            assertEquals(Status.FAILED_PRECONDITION.code, status.code)
+        }
+    }
 
     @MockBean(ErpClient::class)
     fun itauClient(): ErpClient? {
         return Mockito.mock(ErpClient::class.java)
+    }
+    @MockBean(BcbPixClient::class)
+    fun bcbPixClient(): BcbPixClient? {
+        return Mockito.mock(BcbPixClient::class.java)
     }
 @Factory
 class Clients{
@@ -178,4 +213,39 @@ class Clients{
         )
     }
 
+    private fun problemResponse():Problem{
+        return Problem(
+            type = "UNPROCESSABLE_ENTITY",
+            status = 422,
+            title = "Unprocessable Entity",
+            detail ="The informed Pix key exists already"
+        )
+    }
+
+    private fun novoCreatePixKeyRequest(): CreatePixKeyRequest {
+        val bankAccount = BankAccount(
+            participant = "60701190",
+            branch = "0001",
+            accountNumber = "291900",
+            accountType = AccountType.CACC
+        )
+
+        val owner= Owner(
+            type = PessoaType.NATURAL_PERSON,
+            name = "Rafael M C Ponte",
+            taxIdNumber= CLIENTE_ID
+        )
+        return CreatePixKeyRequest(
+            keyType = KeyType.EMAIL,
+            key ="rafael@email.com",
+            bankAccount= bankAccount,
+            owner= owner
+        )
+    }
+    private fun novoCreatePixKeyResponse(): CreatePixKeyResponse {
+        return CreatePixKeyResponse(
+            keyType = KeyType.EMAIL,
+            key ="rafael@email.com"
+        )
+    }
 }
